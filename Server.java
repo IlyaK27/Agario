@@ -39,37 +39,49 @@ public class Server {
         BufferedReader input;
         public boolean alive = true;
         Heartbeat heartbeat;
+        Player player;
         
         public PlayerHandler(Socket socket) { 
             this.socket = socket;
             this.heartbeat = new Heartbeat(this);
             this.heartbeat.start();
+            this.player = new Player();
         }
         
         public void run() {
             try {
                 input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 output = new PrintWriter(socket.getOutputStream());
+                String msg;
                 while (true) {
-                    
+                    //receive a message from the client
+                    msg = input.readLine();
+                    if (msg != null) {
+                        // Interpret the message
+                        System.out.println("Message from the client: " + msg);
+                        //send a response to the client
+                        output.println("Client "+clientCounter+", you are connected!");
+                        output.flush();
+                    }
                 }
-                //receive a message from the client
-                String msg = input.readLine();
-                System.out.println("Message from the client: " + msg);
-                //send a response to the client
-                output.println("Client "+clientCounter+", you are connected!");
-                output.flush();         
-                //after completing the communication close the streams but do not close the socket!
-                input.close();
-                output.close();
-            }catch (IOException e) {e.printStackTrace();}
+            }catch (IOException e) {
+                e.printStackTrace();
+                this.close();
+            }
         }
-        @Override
-        public void interrupt() {
+        public void close() {
+            this.interrupt();
             // Stop the heartbeat subthread
             this.heartbeat.interrupt();
+            try {
+                input.close();
+                output.close();
+                socket.close();
+    
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             // TODO: kill the player
-            super.interrupt();
         }
         // If there is no "heartbeat" from the client for 60 seconds, assume the connection has failed
         class Heartbeat extends Thread {
