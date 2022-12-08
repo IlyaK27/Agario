@@ -5,18 +5,13 @@ public class Ball extends Circle {
     private String name;
     // todo: implement ball growth
     
-    public Ball(String name, Color color){
-        super(Const.STARTING_RADIUS, color);
+    public Ball(int id, int x, int y, Color color, String name){
+        super(id, x, y, Const.STARTING_RADIUS, color);
         this.name = name;
     }
 
-    public boolean intersects(Ball otherBall){
-        boolean intersects = false;
-        int distanceBetweenCenters = (int)(Math.sqrt(Math.pow(x - otherBall.getX(),2)  + Math.pow(y - otherBall.getY(),2)));
-        if(distanceBetweenCenters <= radius + otherBall.getRadius()){
-            intersects = true;
-        }
-        return intersects;
+    public boolean intersects(Ball other){
+        return (Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2))) <= this.radius + other.getRadius();
     }
     public int diameter() {
         return this.radius * 2;
