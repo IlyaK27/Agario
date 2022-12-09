@@ -4,8 +4,11 @@ public class Const {
     public static final int PORT = 5001;
 
     // Map width and height
-    public static final int WIDTH = 1000;
-    public static final int HEIGHT = 800;
+    public static final int WIDTH = 30000;
+    public static final int HEIGHT = 30000;
+
+    // How many pellets will be in the game when the server starts
+    public static final int START_PELLETS = 200;
 
     // Stored as a percent
     public static final int GROWTH_RATE = 40;

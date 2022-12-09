@@ -39,4 +39,10 @@ public class Circle {
     public Color getColor() {
         return this.color;
     }
+    public int diameter() {
+        return this.radius * 2;
+    }
+    public boolean intersects(Circle other) {
+        return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2)) < this.radius + other.getRadius();
+    }
 }

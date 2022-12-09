@@ -3,26 +3,34 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class Server {    
+public class Game {    
     ServerSocket serverSocket;
     Socket clientSocket;
     PrintWriter output;
     BufferedReader input;
     int clientCounter = 0;
+    public int idCounter = Integer.MIN_VALUE;
+
+    GameThread gameThread;
 
     HashSet<PlayerHandler> handlers;
+    HashSet<Player> players;
+    TreeMap<Integer, Ball> balls;
+    TreeMap<Integer, Pellet> pellets;
     
     public static void main(String[] args) throws Exception{ 
-        Server server = new Server();
-        server.go();
+        Game game = new Game();
+        game.go();
     }
     
     public void go() throws Exception{ 
         //create a socket with the local IP address and wait for connection request       
         System.out.println("Launching server...");
         serverSocket = new ServerSocket(Const.PORT);                //create and bind a socket
+        this.setup();
         // Create a thread that updates the game state
-        
+        this.gameThread = new GameThread(this);
+        this.gameThread.start();
         while (true) {
             clientSocket = serverSocket.accept();             //wait for connection request
             clientCounter = clientCounter + 1;
@@ -30,6 +38,19 @@ public class Server {
             Thread connectionThread = new Thread(new PlayerHandler(clientSocket));
             connectionThread.start();                         //start a new thread to handle the connection
         }
+    }
+    public void setup() {
+        this.handlers = new HashSet<PlayerHandler>();
+        this.players = new HashSet<Player>();
+        this.balls = new TreeMap<Integer, Ball>();
+        this.pellets = new TreeMap<Integer, Pellet>();
+        for (int i = 0; i < Const.START_PELLETS; i++) {
+            createPellet();
+        }
+    }
+    public void createPellet() {
+        Pellet pellet = new Pellet(idCounter++, (int)(Math.random() * Const.WIDTH), (int)(Math.random() * Const.WIDTH));
+        this.pellets.put(pellet.getId(), pellet);
     }
     
 //------------------------------------------------------------------------------
@@ -105,4 +126,26 @@ public class Server {
             }
         }
     }    
+    class GameThread extends Thread {
+        Game game;
+        PelletThread pelletThread;
+        GameThread(Game game) {
+            this.game = game;
+        }
+        public void run() {
+            while (true) {
+
+            }
+        }
+        class PelletThread extends Thread {
+            Game game;
+            PelletThread(Game game) {
+                this.game = game;
+            }
+            public void run() {
+                try {Thread.sleep(1000);} catch (Exception e) {};
+                this.game.createPellet();
+            }
+        }
+    }
 }
