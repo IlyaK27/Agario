@@ -61,6 +61,7 @@ public class Game {
         this.threadMachine.start();
     }
     public void printNew(Ball ball, PlayerHandler handler) {
+        if (handler.ball.equals(ball)) {return;}
         handler.print("NEW " + ball.getId() + " " + ball.getColor().getRed() + " " + ball.getColor().getGreen() + " " + ball.getColor().getBlue() + " " + ball.getName());
     }
     public void createPellet() {
