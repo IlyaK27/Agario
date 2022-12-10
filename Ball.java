@@ -21,6 +21,6 @@ public class Ball extends Circle {
     }
     // Checks if the center of the smaller circle is in the radius of the larger circle
     public boolean eats(Circle other) {
-        return this.radius / other.getRadius() > 1.2 && this.distance(other) < this.radius;
+        return (double)this.radius / other.getRadius() > 1.2 && this.distance(other) < this.radius;
     }
 }
