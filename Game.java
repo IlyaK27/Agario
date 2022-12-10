@@ -88,6 +88,7 @@ public class Game {
     public void cleanSockets() {
         for (PlayerHandler handler: this.handlers) {
             if (handler.isDead()) {
+                System.out.println("removed");
                 this.handlers.remove(handler);
             }
         }
@@ -138,7 +139,7 @@ public class Game {
                         try {
                             // JOIN {red} {green} {blue} {*name}
                             if (args[0].equals("JOIN")) {
-                                if (!this.hasBall()) {
+                                if (this.hasBall()) {
                                     this.print("ERROR Player already has joined game");
                                 } else {
                                     Color color = new Color(Integer.valueOf(args[1]), Integer.valueOf(args[2]), Integer.valueOf(args[3]));
@@ -205,9 +206,11 @@ public class Game {
                     try {
                         Thread.sleep(Const.HEARTBEAT_RATE);
                     } catch (Exception e) {}
+                    System.out.println("Check for heartbeat");
                     if (this.playerHandler.alive) {
                         this.playerHandler.alive = false;
                     } else {
+                        System.out.println("test");
                         this.playerHandler.close();
                         break;
                     }
