@@ -23,9 +23,17 @@ public class Const {
     public static final double radians(int angle) {
         return angle / 180d * Math.PI;
     }
+    // Conditional speed formula
+    public static final int speed(int radius) {
+        if (radius < 50) return 20;
+        else if (radius < 100) return 25;
+        else return 30;
+    }
+    /* // exponential speed formula
     public static final int speed(int radius) {
         return (int)(5 * Math.pow(0.9, (radius - 30))) + 3;
     }
+    */
     public static final int xChange(int angle, int speed) {
         return (int)(Math.cos(radians(angle)) * speed);
     }
