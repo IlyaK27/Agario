@@ -148,7 +148,7 @@ public class Game {
                                         name += args[i] + " ";
                                     }
                                     this.ball = createBall(this, color, name);
-                                    this.print(this.ball.getX() + " " + this.ball.getY() + " " + this.ball.getRadius());
+                                    this.print("JOIN " + this.ball.getX() + " " + this.ball.getY() + " " + this.ball.getRadius());
                                 }
                             } 
                             // PING
@@ -174,7 +174,10 @@ public class Game {
             }
         }
         public void print(String text) {
-            if (this.isDead()) {return;};
+            if (this.isDead()) {
+                System.out.println("Dead socket, message send failure");
+                return;
+            };
             output.println(text);
             output.flush();
         }
@@ -301,7 +304,7 @@ public class Game {
                 while (true) {
                     for (PlayerHandler handler: this.game.handlerMap.values()) {
                         // Send info about the player's own ball
-                        handler.print("MOVE " + handler.ball.getX() + handler.ball.getY() + handler.ball.getRadius());
+                        handler.print("MOVE " + handler.ball.getX() + " " + handler.ball.getY() + " " + handler.ball.getRadius());
                         // Send pellet info
                         for (Pellet pellet: this.game.pellets.values()) {
                             if (handler.ball.distance(pellet) <= Const.CLIENT_VIEW_RADIUS) {
@@ -315,6 +318,7 @@ public class Game {
                             }
                         }
                     }
+                    try {Thread.sleep(200);} catch (Exception e) {};
                 }
             }
         }
