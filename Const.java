@@ -7,11 +7,11 @@ public class Const {
 
     public static final int CLIENT_VIEW_RADIUS = 1500;
 
-    public static final int HEARTBEAT_RATE = 10000;
+    public static final int HEARTBEAT_RATE = 60000;
 
     // How many pellets will be in the game when the server starts
-    public static final int START_PELLETS = 200;
-    public static final int PELLET_SPAWN_RATE = 2000;
+    public static final int START_PELLETS = 5000;
+    public static final int PELLET_SPAWN_RATE = 20;
 
     // Stored as a percent
     public static final int GROWTH_RATE = 40;
@@ -19,24 +19,16 @@ public class Const {
     public static final int FOOD_RADIUS = 10;
 
     public static final double radians(int angle) {
-        return angle / 180 * Math.PI;
+        return angle / 180d * Math.PI;
     }
     public static final int speed(int radius) {
         return (int)(5 * Math.pow(0.9, (radius - 30))) + 3;
     }
     public static final int xChange(int angle, int speed) {
-        if (angle <= 90 || angle > 270) {
-            return (int)(Math.cos(radians(angle)) * speed);
-        } else {
-            return (int)(-Math.cos(radians(angle)) * speed);
-        }
+        return (int)(Math.cos(radians(angle)) * speed);
     }
     public static final int yChange(int angle, int speed) {
-        if (angle <= 180) {
-            return (int)(Math.sin(radians(angle)) * speed);
-        } else {
-            return (int)(-Math.sin(radians(angle)) * speed);
-        }
+        return (int)(Math.sin(radians(angle)) * speed);
     }
     private Const(){}
 }

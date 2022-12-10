@@ -21,13 +21,13 @@ public class Circle {
         return this.x;
     }
     public void setX(int x) {
-        this.x = x;
+        this.x = Math.min(Const.WIDTH, Math.max(0, x));
     }
     public int getY() {
         return this.y;
     }
     public void setY(int y) {
-        this.y = y;
+        this.y = Math.min(Const.HEIGHT, Math.max(0, y));
     }
     public int getRadius() {
         return this.radius;
