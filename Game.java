@@ -61,7 +61,6 @@ public class Game {
         this.threadMachine.start();
     }
     public void printNew(Ball ball, PlayerHandler handler) {
-        if (handler.ball.equals(ball)) {return;}
         handler.print("NEW " + ball.getId() + " " + ball.getColor().getRed() + " " + ball.getColor().getGreen() + " " + ball.getColor().getBlue() + " " + ball.getName());
     }
     public void createPellet() {
@@ -75,7 +74,10 @@ public class Game {
         synchronized (ballLock) {
             this.balls.put(ball.getId(), ball);
         }
-        for (PlayerHandler i: handlers) {
+        for (PlayerHandler i: this.handlers) {
+            if (handler.equals(i)) {
+                continue;
+            }
             this.printNew(ball, i);
         }
         this.handlerMap.put(ball.getId(), handler);
@@ -179,6 +181,7 @@ public class Game {
                             }
                         } catch (Exception e) {
                             this.print("ERROR invalid arguments");
+                            e.printStackTrace();
                         }
                     }
                 }
