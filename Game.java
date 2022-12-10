@@ -29,6 +29,7 @@ public class Game {
         //create a socket with the local IP address and wait for connection request       
         System.out.println("Launching server...");
         serverSocket = new ServerSocket(Const.PORT);                //create and bind a socket
+        System.out.println("Connected at port " + serverSocket.getLocalPort());
         this.setup();
         // Create a thread that updates the game state
         while (true) {
@@ -124,6 +125,11 @@ public class Game {
                 String msg;
                 while (true) {
                     //receive a message from the client
+                    try {
+                        msg = input.readLine();
+                    } catch (Exception e) {
+                        this.close();
+                    }
                     msg = input.readLine();
                     if (msg != null) {
                         System.out.println("Message from the client: " + msg);
@@ -184,7 +190,6 @@ public class Game {
             if (this.hasBall()) {
                 killBall(this.ball.getId());
             }
-            killBall(this.ball.getId());
             this.socket = null;
         }
         // If there is no "heartbeat" from the client for 60 seconds, assume the connection has failed
