@@ -111,7 +111,7 @@ public class Game {
         }
         // Whether the socket is dead
         public boolean isDead() {
-            return this.socket == null;
+            return this.socket == null || this.output == null || this.input == null;
         }
         // Kill the player's ball
         public void kill() {
@@ -125,12 +125,13 @@ public class Game {
                 String msg;
                 while (true) {
                     //receive a message from the client
+                    msg = null;
                     try {
                         msg = input.readLine();
                     } catch (Exception e) {
                         this.close();
+                        break;
                     }
-                    msg = input.readLine();
                     if (msg != null) {
                         System.out.println("Message from the client: " + msg);
                         String[] args = msg.split(" ");
@@ -219,18 +220,21 @@ public class Game {
         PelletThread pelletThread;
         BallThread ballThread;
         SpeakerThread speakerThread;
+        SocketCleanerThread socketCleanerThread;
         AnalyticsThread analyticsThread;
         ThreadMachine(Game game) {
             this.game = game;
             this.pelletThread = new PelletThread(this.game);
             this.ballThread = new BallThread(this.game);
             this.speakerThread = new SpeakerThread(this.game);
+            this.socketCleanerThread = new SocketCleanerThread(this.game);
             this.analyticsThread = new AnalyticsThread(this.game);
         }
         public void start() {
             this.pelletThread.start();
             this.ballThread.start();
             this.speakerThread.start();
+            this.socketCleanerThread.start();
             this.analyticsThread.start();
         }
         class PelletThread extends Thread {
@@ -308,6 +312,23 @@ public class Game {
                             }
                         }
                     }
+                }
+            }
+        }
+        class SocketCleanerThread extends Thread {
+            Game game;
+            SocketCleanerThread(Game game) {
+                this.game = game;
+            }
+            public void run() {
+                while (true) {
+                    try {
+                        this.game.cleanSockets();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("Clean!");
+                    try {Thread.sleep(5000);} catch (Exception e) {};
                 }
             }
         }
