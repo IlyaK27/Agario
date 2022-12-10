@@ -219,16 +219,19 @@ public class Game {
         PelletThread pelletThread;
         BallThread ballThread;
         SpeakerThread speakerThread;
+        AnalyticsThread analyticsThread;
         ThreadMachine(Game game) {
             this.game = game;
             this.pelletThread = new PelletThread(this.game);
             this.ballThread = new BallThread(this.game);
             this.speakerThread = new SpeakerThread(this.game);
+            this.analyticsThread = new AnalyticsThread(this.game);
         }
         public void start() {
             this.pelletThread.start();
             this.ballThread.start();
             this.speakerThread.start();
+            this.analyticsThread.start();
         }
         class PelletThread extends Thread {
             Game game;
@@ -305,6 +308,27 @@ public class Game {
                             }
                         }
                     }
+                }
+            }
+        }
+        class AnalyticsThread extends Thread {
+            Game game;
+            AnalyticsThread(Game game) {
+                this.game = game;
+            }
+            public void run() {
+                while (true) {
+                    System.out.println("------------------------------------------------------------------------------");
+                    // How many players connected
+                    System.out.println(this.game.handlers.size() + " players connected");
+                    // How many balls
+                    System.out.println(this.game.balls.size() + " balls");
+                    // How many pellets
+                    System.out.println(this.game.pellets.size() + " pellets");
+                    // HandlerMap size
+                    System.out.println(this.game.handlerMap.size() + " HandlerMap size");
+                    System.out.println("------------------------------------------------------------------------------");
+                    try {Thread.sleep(5000);} catch (Exception e) {};
                 }
             }
         }
