@@ -38,17 +38,24 @@ public class Game {
             PlayerHandler handler = new PlayerHandler(clientSocket);
             handlers.add(handler);
             handler.start();
+            for (Integer id: this.balls.keySet()) {
+                this.printNew(this.balls.get(id), handler);
+            }
         }
     }
     public void setup() {
         this.handlers = new HashSet<PlayerHandler>();
         this.balls = new HashMap<Integer, Ball>();
         this.pellets = new HashMap<Integer, Pellet>();
+        this.handlerMap = new HashMap<Integer, PlayerHandler>();
         for (int i = 0; i < Const.START_PELLETS; i++) {
             createPellet();
         }
         this.threadMachine = new ThreadMachine(this);
         this.threadMachine.start();
+    }
+    public void printNew(Ball ball, PlayerHandler handler) {
+        handler.print("NEW " + ball.getId() + " " + ball.getColor().getRed() + " " + ball.getColor().getGreen() + " " + ball.getColor().getBlue() + " " + ball.getName());
     }
     public void createPellet() {
         Pellet pellet = new Pellet(idCounter++, (int)(Math.random() * Const.WIDTH), (int)(Math.random() * Const.HEIGHT));
@@ -57,16 +64,25 @@ public class Game {
     public Ball createBall(PlayerHandler handler, Color color, String name) {
         Ball ball = new Ball(idCounter++, (int)(Math.random() * Const.WIDTH), (int)(Math.random() * Const.HEIGHT), (int)(Math.random() * 360), color, name);
         this.balls.put(ball.getId(), ball);
+        for (PlayerHandler i: handlers) {
+            this.printNew(ball, i);
+        }
         this.handlerMap.put(ball.getId(), handler);
         return ball;
     }
     public void killPellet(int id) {
         this.pellets.remove(id);
+        for (Integer handlerId: this.handlerMap.keySet()) {
+            this.handlerMap.get(handlerId).print("REMOVE " + id + " pellet");
+        }
     }
     public void killBall(int id) {
         this.balls.remove(id);
         this.handlerMap.get(id).kill();
         this.handlerMap.remove(id);
+        for (PlayerHandler handler: this.handlers) {
+            handler.print("REMOVE " + id + " ball");
+        }
     }
     public void cleanSockets() {
         for (PlayerHandler handler: this.handlers) {
@@ -99,6 +115,7 @@ public class Game {
         // Kill the player's ball
         public void kill() {
             this.ball = null;
+            this.print("DIE");
         }
         public void run() {
             try {
@@ -196,14 +213,17 @@ public class Game {
         Game game;
         PelletThread pelletThread;
         BallThread ballThread;
+        SpeakerThread speakerThread;
         ThreadMachine(Game game) {
             this.game = game;
             this.pelletThread = new PelletThread(this.game);
             this.ballThread = new BallThread(this.game);
+            this.speakerThread = new SpeakerThread(this.game);
         }
         public void start() {
             this.pelletThread.start();
             this.ballThread.start();
+            this.speakerThread.start();
         }
         class PelletThread extends Thread {
             Game game;
@@ -211,8 +231,10 @@ public class Game {
                 this.game = game;
             }
             public void run() {
-                try {Thread.sleep(Const.PELLET_SPAWN_RATE);} catch (Exception e) {};
-                this.game.createPellet();
+                while (true) {
+                    try {Thread.sleep(Const.PELLET_SPAWN_RATE);} catch (Exception e) {};
+                    this.game.createPellet();
+                }
             }
         }
         class BallThread extends Thread {
@@ -222,8 +244,62 @@ public class Game {
             }
             public void run() {
                 while (true) {
-                    try {Thread.sleep(20);} catch (Exception e) {};
-                    
+                    try {Thread.sleep(200);} catch (Exception e) {};
+                    // Move balls
+                    for (Integer id: this.game.balls.keySet()) {
+                        Ball ball = this.game.balls.get(id);
+                        ball.setX(ball.getX() + Const.xChange(ball.getAngle(), Const.speed(ball.getRadius())));
+                        ball.setY(ball.getY() + Const.yChange(ball.getAngle(), Const.speed(ball.getRadius())));
+                    }
+                    // Eat pellets and balls
+                    for (Integer id: this.game.balls.keySet()) {
+                        Ball ball = this.game.balls.get(id);
+                        for (Integer pelletId: this.game.pellets.keySet()) {
+                            if (ball.intersects(this.game.pellets.get(pelletId))) {
+                                this.game.killPellet(pelletId);
+                                ball.setRadius(ball.getRadius() + 3);
+                            }
+                        }
+                        HashSet<Integer> removals = new HashSet<Integer>();
+                        for (Integer ballId: this.game.balls.keySet()) {
+                            if (ball.getId() == ballId) {
+                                continue;
+                            }
+                            if (ball.eats(this.game.balls.get(ballId))) {
+                                removals.add(ballId);
+                                ball.setRadius(ball.getRadius() + this.game.balls.get(ballId).getRadius() / 2);
+                            }
+                        }
+                        for (Integer i: removals) {
+                            this.game.killBall(i);
+                        }
+                    }
+                }
+            }
+        }
+        class SpeakerThread extends Thread {
+            Game game;
+            SpeakerThread(Game game) {
+                this.game = game;
+            }
+            public void run() {
+                while (true) {
+                    for (PlayerHandler handler: this.game.handlerMap.values()) {
+                        // Send info about the player's own ball
+                        handler.print("MOVE " + handler.ball.getX() + handler.ball.getY() + handler.ball.getRadius());
+                        // Send pellet info
+                        for (Pellet pellet: this.game.pellets.values()) {
+                            if (handler.ball.distance(pellet) <= Const.CLIENT_VIEW_RADIUS) {
+                                handler.print("PELLET " + pellet.getId() + " " + pellet.getX() + " " + pellet.getY() + " " + pellet.getRadius() + " " + pellet.getColor().getRed() + " " + pellet.getColor().getGreen() + " " + pellet.getColor().getBlue());
+                            }
+                        }
+                        // Send ball info
+                        for (Ball ball: this.game.balls.values()) {
+                            if (!handler.ball.equals(ball) && handler.ball.distance(ball) <= Const.CLIENT_VIEW_RADIUS) {
+                                handler.print("BALL " + ball.getId() + " " + ball.getX() + " " + ball.getY() + " " + ball.getRadius());
+                            }
+                        }
+                    }
                 }
             }
         }
