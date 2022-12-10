@@ -1,5 +1,3 @@
-import java.awt.*;
-
 public class Const {
     public static final int PORT = 5001;
 

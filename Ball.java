@@ -1,4 +1,3 @@
-import java.util.*;
 import java.awt.*; 
 
 public class Ball extends Circle {
@@ -19,8 +18,5 @@ public class Ball extends Circle {
     }
     public void setAngle(int angle) {
         this.angle = angle % 360;
-    }
-    public boolean intersects(Ball other){
-        return (Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2))) <= this.radius + other.getRadius();
     }
 }

@@ -1,4 +1,3 @@
-import java.util.*;
 import java.awt.*;
 
 public class Circle {
@@ -42,7 +41,8 @@ public class Circle {
     public int diameter() {
         return this.radius * 2;
     }
+    // Checks if the center of the smaller circle is in the radius of the larger circle
     public boolean intersects(Circle other) {
-        return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2)) < this.radius + other.getRadius();
+        return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2)) < Math.max(this.radius, other.getRadius());
     }
 }
