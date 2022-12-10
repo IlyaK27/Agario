@@ -162,7 +162,7 @@ public class Game {
                                         name += args[i] + " ";
                                     }
                                     this.ball = createBall(this, color, name);
-                                    this.print("JOIN " + this.ball.getX() + " " + this.ball.getY() + " " + this.ball.getRadius());
+                                    this.print("JOIN " + this.ball.getId() + " " + this.ball.getX() + " " + this.ball.getY() + " " + this.ball.getRadius());
                                 }
                             }
                             // PING
