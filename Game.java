@@ -354,7 +354,7 @@ public class Game {
                                 }
                             }
                         }
-                        try {Thread.sleep(200);} catch (Exception e) {};
+                        try {Thread.sleep(1000 / Const.TPS);} catch (Exception e) {};
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -8,6 +8,8 @@ public class Const {
     public static final int CLIENT_VIEW_RADIUS = 1500;
 
     public static final int HEARTBEAT_RATE = 60000;
+    
+    public static final int TPS = 50;
 
     // How many pellets will be in the game when the server starts
     public static final int START_PELLETS = 5000;
