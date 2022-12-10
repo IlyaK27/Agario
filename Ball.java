@@ -19,4 +19,8 @@ public class Ball extends Circle {
     public void setAngle(int angle) {
         this.angle = angle % 360;
     }
+    // Checks if the center of the smaller circle is in the radius of the larger circle
+    public boolean eats(Circle other) {
+        return this.radius / other.getRadius() > 1.2 && this.distance(other) < this.radius;
+    }
 }

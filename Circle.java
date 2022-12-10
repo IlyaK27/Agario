@@ -38,11 +38,16 @@ public class Circle {
     public Color getColor() {
         return this.color;
     }
+    public boolean equals(Circle other) {
+        return this.id == other.getId();
+    }
     public int diameter() {
         return this.radius * 2;
     }
-    // Checks if the center of the smaller circle is in the radius of the larger circle
+    public double distance(Circle other) {
+        return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2));
+    }
     public boolean intersects(Circle other) {
-        return Math.sqrt(Math.pow(this.x - other.getX(), 2) + Math.pow(this.y - other.getY(), 2)) < Math.max(this.radius, other.getRadius());
+        return this.distance(other) <= this.radius + other.getRadius();
     }
 }
